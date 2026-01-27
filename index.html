@@ -68,10 +68,10 @@
         }
 
         h1 {
-            font-family: 'Black Han Sans', sans-serif;
-            font-size: 1.7rem;
-            letter-spacing: 0.15em;
-            word-spacing: 0.1em;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
             background: linear-gradient(135deg, var(--accent-gold) 0%, #fff 50%, var(--accent-gold) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -808,6 +808,11 @@
 
         // Firebase에서 데이터 로드
         async function loadFromFirebase() {
+            // 먼저 로컬 스토리지에서 로드 (백업)
+            loadFromLocalStorage();
+            renderTeams();
+            renderMatches();
+            
             try {
                 const doc = await db.collection('tournaments').doc('current').get();
                 if (doc.exists) {
@@ -815,20 +820,22 @@
                     state.teams = data.teams || [];
                     state.rounds = data.rounds || [{ matches: [{}, {}, {}, {}], isDouble: false }];
                     state.currentRound = Math.min(state.currentRound, state.rounds.length - 1);
+                    // 로컬 스토리지에도 저장
+                    saveToLocalStorage();
                 }
-                updateFirebaseStatus(true, 'Firebase 연결됨 ✓');
                 renderTeams();
                 renderMatches();
-                showNotification('데이터를 불러왔습니다', 'success');
             } catch (error) {
                 console.error('Firebase 로드 오류:', error);
-                updateFirebaseStatus(false, 'Firebase 연결 실패');
-                showNotification('데이터 로드 실패', 'error');
+                // Firebase 실패해도 로컬 데이터 사용
             }
         }
 
         // Firebase에 데이터 저장
         async function saveToFirebase() {
+            // 로컬 스토리지에도 항상 저장
+            saveToLocalStorage();
+            
             try {
                 await db.collection('tournaments').doc('current').set({
                     teams: state.teams,
@@ -838,7 +845,30 @@
                 console.log('Firebase 저장 완료');
             } catch (error) {
                 console.error('Firebase 저장 오류:', error);
-                showNotification('저장 실패', 'error');
+            }
+        }
+
+        // 로컬 스토리지 저장
+        function saveToLocalStorage() {
+            try {
+                localStorage.setItem('hanaClubData', JSON.stringify(state));
+            } catch(e) {
+                console.log('LocalStorage 저장 실패');
+            }
+        }
+
+        // 로컬 스토리지에서 로드
+        function loadFromLocalStorage() {
+            try {
+                const saved = localStorage.getItem('hanaClubData');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    state.teams = data.teams || [];
+                    state.rounds = data.rounds || [{ matches: [{}, {}, {}, {}], isDouble: false }];
+                    state.currentRound = data.currentRound || 0;
+                }
+            } catch(e) {
+                console.log('LocalStorage 로드 실패');
             }
         }
 
@@ -850,6 +880,8 @@
                     state.teams = data.teams || [];
                     state.rounds = data.rounds || [{ matches: [{}, {}, {}, {}], isDouble: false }];
                     state.currentRound = Math.min(state.currentRound, state.rounds.length - 1);
+                    // 로컬 스토리지에도 저장
+                    saveToLocalStorage();
                     renderTeams();
                     renderMatches();
                     renderScoreboard();
