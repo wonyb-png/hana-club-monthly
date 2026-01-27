@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>하나클럽 월례회</title>
+    <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-card: #12121a;
+            --bg-elevated: #1a1a25;
+            --accent-gold: #ffd700;
+            --accent-black: #1a1a1a;
+            --accent-white: #f5f5f5;
+            --text-primary: #ffffff;
+            --text-secondary: #8a8a9a;
+            --border-color: #2a2a3a;
+            --success: #4ade80;
+            --danger: #f87171;
+            --team-black: #2d2d2d;
+            --team-white: #e8e8e8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 14px;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(ellipse at top, rgba(255, 215, 0, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom, rgba(255, 215, 0, 0.03) 0%, transparent 50%);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        header {
+            text-align: center;
+            padding: 25px 15px;
+            position: relative;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+        }
+
+        h1 {
+            font-family: 'Black Han Sans', sans-serif;
+            font-size: 2.2rem;
+            letter-spacing: 0.1em;
+            background: linear-gradient(135deg, var(--accent-gold) 0%, #fff 50%, var(--accent-gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 6px;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.2); }
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+
+        .firebase-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 12px;
+            padding: 6px 14px;
+            background: var(--bg-card);
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--danger);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .status-dot.connected {
+            background: var(--success);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 10px 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 6px;
+        }
+
+        .tab-btn:hover {
+            border-color: var(--accent-gold);
+            color: var(--text-primary);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--accent-gold), #b8860b);
+            color: var(--bg-dark);
+            border-color: var(--accent-gold);
+            font-weight: 700;
+        }
+
+        .panel {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title::before {
+            content: '';
+            width: 3px;
+            height: 16px;
+            background: var(--accent-gold);
+            border-radius: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-gold), #b8860b);
+            color: var(--bg-dark);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent-gold);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .team-input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 12px;
+            align-items: end;
+            margin-bottom: 12px;
+        }
+
+        @media (max-width: 600px) {
+            .team-input-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .teams-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .team-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .team-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-gold), transparent);
+        }
+
+        .team-name {
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 6px;
+        }
+
+        .team-members {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        .team-delete {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: color 0.3s ease;
+        }
+
+        .team-delete:hover {
+            color: var(--danger);
+        }
+
+        .round-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .round-selector {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .round-number {
+            font-family: 'Black Han Sans', sans-serif;
+            font-size: 1.6rem;
+            color: var(--accent-gold);
+        }
+
+        .double-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: var(--bg-elevated);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: var(--accent-gold);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 18px;
+            height: 18px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-switch.active::after {
+            transform: translateX(20px);
+        }
+
+        .double-badge {
+            background: var(--accent-gold);
+            color: var(--bg-dark);
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .match-grid {
+            display: grid;
+            gap: 15px;
+        }
+
+        .match-row {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 15px;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr auto;
+            gap: 15px;
+            align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            .match-row {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+        }
+
+        .match-team {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .match-team {
+                justify-content: center;
+            }
+        }
+
+        .team-badge {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.7rem;
+            flex-shrink: 0;
+        }
+
+        .team-badge.black {
+            background: var(--team-black);
+            color: white;
+            border: 2px solid #444;
+        }
+
+        .team-badge.white {
+            background: var(--team-white);
+            color: #333;
+            border: 2px solid #ccc;
+        }
+
+        .vs-text {
+            font-family: 'Black Han Sans', sans-serif;
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .result-buttons {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+        }
+
+        .result-btn {
+            width: 36px;
+            height: 36px;
+            border: 2px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .result-btn:hover {
+            border-color: var(--accent-gold);
+        }
+
+        .result-btn.selected-black {
+            background: var(--team-black);
+            color: white;
+            border-color: var(--team-black);
+        }
+
+        .result-btn.selected-white {
+            background: var(--team-white);
+            color: #333;
+            border-color: var(--team-white);
+        }
+
+        .score-summary {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 25px;
+            align-items: center;
+            margin-top: 25px;
+            padding: 20px;
+            background: var(--bg-elevated);
+            border-radius: 10px;
+        }
+
+        .score-team {
+            text-align: center;
+        }
+
+        .score-value {
+            font-family: 'Black Han Sans', sans-serif;
+            font-size: 2.4rem;
+        }
+
+        .score-label {
+            color: var(--text-secondary);
+            margin-top: 4px;
+            font-size: 0.8rem;
+        }
+
+        .score-divider {
+            width: 2px;
+            height: 50px;
+            background: var(--border-color);
+        }
+
+        .scoreboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .scoreboard-table th,
+        .scoreboard-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .scoreboard-table th {
+            background: var(--bg-elevated);
+            color: var(--accent-gold);
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+        }
+
+        .scoreboard-table tr:hover td {
+            background: rgba(255, 215, 0, 0.05);
+        }
+
+        .rank-cell {
+            font-family: 'Black Han Sans', sans-serif;
+            font-size: 1.1rem;
+        }
+
+        .rank-1 { color: var(--accent-gold); }
+        .rank-2 { color: #c0c0c0; }
+        .rank-3 { color: #cd7f32; }
+
+        .total-score {
+            font-family: 'Black Han Sans', sans-serif;
+            font-size: 1.2rem;
+            color: var(--accent-gold);
+        }
+
+        .round-scores {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .round-score-badge {
+            padding: 3px 8px;
+            background: var(--bg-card);
+            border-radius: 5px;
+            font-size: 0.75rem;
+        }
+
+        .round-score-badge.double {
+            background: rgba(255, 215, 0, 0.2);
+            color: var(--accent-gold);
+        }
+
+        .winner-banner {
+            background: linear-gradient(135deg, var(--accent-gold), #b8860b);
+            color: var(--bg-dark);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .winner-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-bottom: 8px;
+        }
+
+        .winner-name {
+            font-family: 'Black Han Sans', sans-serif;
+            font-size: 2rem;
+        }
+
+        .actions-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 15px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.3;
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            padding: 12px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            font-size: 0.85rem;
+        }
+
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .notification.success {
+            border-color: var(--success);
+        }
+
+        .notification.error {
+            border-color: var(--danger);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-secondary);
+        }
+
+        .loading::after {
+            content: '';
+            animation: dots 1.5s infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>하나클럽 월례회</h1>
+            <p class="subtitle">Hana Club Monthly Meeting</p>
+            <div class="firebase-status">
+                <span class="status-dot" id="firebaseStatus"></span>
+                <span id="firebaseStatusText">Firebase 연결 중...</span>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="teams">팀 관리</button>
+            <button class="tab-btn" data-tab="rounds">라운드 경기</button>
+            <button class="tab-btn" data-tab="scoreboard">순위표</button>
+        </div>
+
+        <!-- 팀 관리 패널 -->
+        <div class="panel active" id="teams-panel">
+            <div class="card">
+                <h2 class="card-title">새 팀 등록</h2>
+                <div class="team-input-row">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>선수 1</label>
+                        <input type="text" id="player1" placeholder="이름 입력">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>선수 2</label>
+                        <input type="text" id="player2" placeholder="이름 입력">
+                    </div>
+                    <button class="btn btn-primary" onclick="addTeam()">팀 추가</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">등록된 팀 목록</h2>
+                <div class="teams-list" id="teamsList"></div>
+            </div>
+        </div>
+
+        <!-- 라운드 경기 패널 -->
+        <div class="panel" id="rounds-panel">
+            <div class="card">
+                <div class="round-header">
+                    <div class="round-selector">
+                        <button class="btn btn-secondary" onclick="changeRound(-1)">◀</button>
+                        <span class="round-number">R<span id="currentRound">1</span></span>
+                        <button class="btn btn-secondary" onclick="changeRound(1)">▶</button>
+                        <button class="btn btn-secondary" onclick="addRound()">+ 라운드</button>
+                    </div>
+                    <div class="double-toggle">
+                        <span>2배 라운드</span>
+                        <div class="toggle-switch" id="doubleToggle" onclick="toggleDouble()"></div>
+                        <span class="double-badge" id="doubleBadge" style="display: none;">×2</span>
+                    </div>
+                </div>
+
+                <div class="match-grid" id="matchGrid">
+                </div>
+
+                <div class="score-summary" id="scoreSummary">
+                    <div class="score-team">
+                        <div class="score-value" id="blackScore">0</div>
+                        <div class="score-label">흑팀 점수</div>
+                    </div>
+                    <div class="score-divider"></div>
+                    <div class="score-team">
+                        <div class="score-value" id="whiteScore">0</div>
+                        <div class="score-label">백팀 점수</div>
+                    </div>
+                </div>
+
+                <div class="actions-row">
+                    <button class="btn btn-primary" onclick="saveRound()">라운드 결과 저장</button>
+                    <button class="btn btn-secondary" onclick="resetRound()">초기화</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 순위표 패널 -->
+        <div class="panel" id="scoreboard-panel">
+            <div id="winnerBanner"></div>
+            <div class="card">
+                <h2 class="card-title">누적 순위표</h2>
+                <div style="overflow-x: auto;">
+                    <table class="scoreboard-table">
+                        <thead>
+                            <tr>
+                                <th>순위</th>
+                                <th>팀명</th>
+                                <th>라운드별 점수</th>
+                                <th>총점</th>
+                            </tr>
+                        </thead>
+                        <tbody id="scoreboardBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // Firebase 설정
+        const firebaseConfig = {
+            apiKey: "AIzaSyD2u7ERqPL_TKnqcWJ3tcH3VmthB4Kfc8U",
+            authDomain: "hana-club-monthly.firebaseapp.com",
+            projectId: "hana-club-monthly",
+            storageBucket: "hana-club-monthly.firebasestorage.app",
+            messagingSenderId: "825886927196",
+            appId: "1:825886927196:web:b4c18560c01efe87bf7999"
+        };
+
+        // Firebase 초기화
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // 앱 상태
+        let state = {
+            teams: [],
+            rounds: [{ matches: [{}, {}, {}, {}], isDouble: false }],
+            currentRound: 0
+        };
+
+        // Firebase 연결 상태 업데이트
+        function updateFirebaseStatus(connected, message) {
+            const dot = document.getElementById('firebaseStatus');
+            const text = document.getElementById('firebaseStatusText');
+            if (connected) {
+                dot.classList.add('connected');
+                text.textContent = message || 'Firebase 연결됨';
+            } else {
+                dot.classList.remove('connected');
+                text.textContent = message || 'Firebase 연결 실패';
+            }
+        }
+
+        // Firebase에서 데이터 로드
+        async function loadFromFirebase() {
+            try {
+                const doc = await db.collection('tournaments').doc('current').get();
+                if (doc.exists) {
+                    const data = doc.data();
+                    state.teams = data.teams || [];
+                    state.rounds = data.rounds || [{ matches: [{}, {}, {}, {}], isDouble: false }];
+                    state.currentRound = Math.min(state.currentRound, state.rounds.length - 1);
+                }
+                updateFirebaseStatus(true, 'Firebase 연결됨 ✓');
+                renderTeams();
+                renderMatches();
+                showNotification('데이터를 불러왔습니다', 'success');
+            } catch (error) {
+                console.error('Firebase 로드 오류:', error);
+                updateFirebaseStatus(false, 'Firebase 연결 실패');
+                showNotification('데이터 로드 실패', 'error');
+            }
+        }
+
+        // Firebase에 데이터 저장
+        async function saveToFirebase() {
+            try {
+                await db.collection('tournaments').doc('current').set({
+                    teams: state.teams,
+                    rounds: state.rounds,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                console.log('Firebase 저장 완료');
+            } catch (error) {
+                console.error('Firebase 저장 오류:', error);
+                showNotification('저장 실패', 'error');
+            }
+        }
+
+        // 실시간 데이터 동기화
+        function setupRealtimeSync() {
+            db.collection('tournaments').doc('current').onSnapshot((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    state.teams = data.teams || [];
+                    state.rounds = data.rounds || [{ matches: [{}, {}, {}, {}], isDouble: false }];
+                    state.currentRound = Math.min(state.currentRound, state.rounds.length - 1);
+                    renderTeams();
+                    renderMatches();
+                    renderScoreboard();
+                }
+            }, (error) => {
+                console.error('실시간 동기화 오류:', error);
+            });
+        }
+
+        // 탭 전환
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab + '-panel').classList.add('active');
+                
+                if (btn.dataset.tab === 'scoreboard') {
+                    renderScoreboard();
+                }
+            });
+        });
+
+        // 팀 추가
+        async function addTeam() {
+            const p1 = document.getElementById('player1').value.trim();
+            const p2 = document.getElementById('player2').value.trim();
+            
+            if (!p1 || !p2) {
+                showNotification('두 선수의 이름을 모두 입력하세요', 'error');
+                return;
+            }
+
+            const team = {
+                id: Date.now().toString(),
+                name: `${p1} & ${p2}`,
+                player1: p1,
+                player2: p2,
+                scores: []
+            };
+
+            state.teams.push(team);
+            document.getElementById('player1').value = '';
+            document.getElementById('player2').value = '';
+            
+            renderTeams();
+            renderMatches();
+            await saveToFirebase();
+            showNotification('팀이 추가되었습니다', 'success');
+        }
+
+        // 팀 삭제
+        async function deleteTeam(id) {
+            if (confirm('이 팀을 삭제하시겠습니까?')) {
+                state.teams = state.teams.filter(t => t.id !== id);
+                renderTeams();
+                renderMatches();
+                await saveToFirebase();
+            }
+        }
+
+        // 팀 목록 렌더링
+        function renderTeams() {
+            const container = document.getElementById('teamsList');
+            if (state.teams.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">👥</div>
+                        <p>등록된 팀이 없습니다</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = state.teams.map(team => `
+                <div class="team-card">
+                    <button class="team-delete" onclick="deleteTeam('${team.id}')">×</button>
+                    <div class="team-name">${team.name}</div>
+                    <div class="team-members">${team.player1} / ${team.player2}</div>
+                </div>
+            `).join('');
+        }
+
+        // 라운드 변경
+        function changeRound(delta) {
+            const newRound = state.currentRound + delta;
+            if (newRound >= 0 && newRound < state.rounds.length) {
+                state.currentRound = newRound;
+                renderMatches();
+            }
+        }
+
+        // 라운드 추가
+        async function addRound() {
+            state.rounds.push({ matches: [{}, {}, {}, {}], isDouble: false });
+            state.currentRound = state.rounds.length - 1;
+            renderMatches();
+            await saveToFirebase();
+        }
+
+        // 2배 라운드 토글
+        async function toggleDouble() {
+            const round = state.rounds[state.currentRound];
+            round.isDouble = !round.isDouble;
+            
+            const toggle = document.getElementById('doubleToggle');
+            const badge = document.getElementById('doubleBadge');
+            
+            toggle.classList.toggle('active', round.isDouble);
+            badge.style.display = round.isDouble ? 'inline' : 'none';
+            
+            calculateRoundScore();
+            await saveToFirebase();
+        }
+
+        // 경기 입력 폼 렌더링
+        function renderMatches() {
+            const round = state.rounds[state.currentRound];
+            document.getElementById('currentRound').textContent = state.currentRound + 1;
+            
+            const toggle = document.getElementById('doubleToggle');
+            const badge = document.getElementById('doubleBadge');
+            toggle.classList.toggle('active', round.isDouble);
+            badge.style.display = round.isDouble ? 'inline' : 'none';
+
+            const container = document.getElementById('matchGrid');
+            
+            if (state.teams.length < 2) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🏸</div>
+                        <p>최소 2개의 팀을 먼저 등록하세요</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = [0, 1, 2, 3].map(i => {
+                const match = round.matches[i] || {};
+                return `
+                    <div class="match-row">
+                        <div class="match-team">
+                            <div class="team-badge black">흑</div>
+                            <select onchange="updateMatch(${i}, 'blackTeam', this.value)">
+                                <option value="">흑팀 선택</option>
+                                ${state.teams.map(t => `
+                                    <option value="${t.id}" ${match.blackTeam === t.id ? 'selected' : ''}>${t.name}</option>
+                                `).join('')}
+                            </select>
+                        </div>
+                        <div class="vs-text">VS</div>
+                        <div class="match-team">
+                            <div class="team-badge white">백</div>
+                            <select onchange="updateMatch(${i}, 'whiteTeam', this.value)">
+                                <option value="">백팀 선택</option>
+                                ${state.teams.map(t => `
+                                    <option value="${t.id}" ${match.whiteTeam === t.id ? 'selected' : ''}>${t.name}</option>
+                                `).join('')}
+                            </select>
+                        </div>
+                        <div class="result-buttons">
+                            <button class="result-btn ${match.winner === 'black' ? 'selected-black' : ''}" 
+                                    onclick="setWinner(${i}, 'black')">흑</button>
+                            <button class="result-btn ${match.winner === 'white' ? 'selected-white' : ''}" 
+                                    onclick="setWinner(${i}, 'white')">백</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            calculateRoundScore();
+        }
+
+        // 경기 정보 업데이트
+        async function updateMatch(index, field, value) {
+            const round = state.rounds[state.currentRound];
+            if (!round.matches[index]) round.matches[index] = {};
+            round.matches[index][field] = value;
+            await saveToFirebase();
+        }
+
+        // 승자 설정
+        async function setWinner(index, winner) {
+            const round = state.rounds[state.currentRound];
+            if (!round.matches[index]) round.matches[index] = {};
+            round.matches[index].winner = winner;
+            renderMatches();
+            await saveToFirebase();
+        }
+
+        // 라운드 점수 계산
+        function calculateRoundScore() {
+            const round = state.rounds[state.currentRound];
+            let blackWins = 0;
+            let whiteWins = 0;
+
+            round.matches.forEach(match => {
+                if (match.winner === 'black') blackWins++;
+                else if (match.winner === 'white') whiteWins++;
+            });
+
+            let blackScore = 0;
+            let whiteScore = 0;
+
+            if (blackWins === 2 && whiteWins === 2) {
+                blackScore = 1;
+                whiteScore = 1;
+            } else if (blackWins >= 3) {
+                blackScore = 1;
+                whiteScore = 0;
+            } else if (whiteWins >= 3) {
+                blackScore = 0;
+                whiteScore = 1;
+            }
+
+            if (round.isDouble) {
+                blackScore *= 2;
+                whiteScore *= 2;
+            }
+
+            document.getElementById('blackScore').textContent = blackScore;
+            document.getElementById('whiteScore').textContent = whiteScore;
+
+            round.blackScore = blackScore;
+            round.whiteScore = whiteScore;
+            round.blackWins = blackWins;
+            round.whiteWins = whiteWins;
+
+            return { blackScore, whiteScore, blackWins, whiteWins };
+        }
+
+        // 라운드 결과 저장
+        async function saveRound() {
+            const round = state.rounds[state.currentRound];
+            const { blackScore, whiteScore } = calculateRoundScore();
+
+            round.matches.forEach(match => {
+                if (!match.blackTeam || !match.whiteTeam || !match.winner) return;
+
+                const blackTeam = state.teams.find(t => t.id === match.blackTeam);
+                const whiteTeam = state.teams.find(t => t.id === match.whiteTeam);
+
+                if (blackTeam) {
+                    if (!blackTeam.roundScores) blackTeam.roundScores = {};
+                    blackTeam.roundScores[state.currentRound] = blackScore;
+                }
+                if (whiteTeam) {
+                    if (!whiteTeam.roundScores) whiteTeam.roundScores = {};
+                    whiteTeam.roundScores[state.currentRound] = whiteScore;
+                }
+            });
+
+            await saveToFirebase();
+            showNotification(`라운드 ${state.currentRound + 1} 결과가 저장되었습니다`, 'success');
+        }
+
+        // 라운드 초기화
+        async function resetRound() {
+            if (confirm('이 라운드의 결과를 초기화하시겠습니까?')) {
+                state.rounds[state.currentRound] = { 
+                    matches: [{}, {}, {}, {}], 
+                    isDouble: false 
+                };
+                renderMatches();
+                await saveToFirebase();
+            }
+        }
+
+        // 순위표 렌더링
+        function renderScoreboard() {
+            const tbody = document.getElementById('scoreboardBody');
+            const winnerBanner = document.getElementById('winnerBanner');
+
+            const teamScores = state.teams.map(team => {
+                let totalScore = 0;
+                const roundScores = [];
+
+                state.rounds.forEach((round, roundIndex) => {
+                    let teamScore = 0;
+                    let participated = false;
+
+                    round.matches.forEach(match => {
+                        if (match.blackTeam === team.id) {
+                            participated = true;
+                            if (round.blackScore !== undefined) {
+                                teamScore = round.blackScore;
+                            }
+                        } else if (match.whiteTeam === team.id) {
+                            participated = true;
+                            if (round.whiteScore !== undefined) {
+                                teamScore = round.whiteScore;
+                            }
+                        }
+                    });
+
+                    if (participated) {
+                        roundScores.push({ round: roundIndex + 1, score: teamScore, isDouble: round.isDouble });
+                        totalScore += teamScore;
+                    }
+                });
+
+                return { ...team, totalScore, roundScores };
+            });
+
+            teamScores.sort((a, b) => b.totalScore - a.totalScore);
+
+            if (teamScores.length > 0 && teamScores[0].totalScore > 0) {
+                winnerBanner.innerHTML = `
+                    <div class="winner-banner">
+                        <div class="winner-title">🏆 현재 선두</div>
+                        <div class="winner-name">${teamScores[0].name}</div>
+                        <div style="margin-top: 8px; font-size: 1rem;">${teamScores[0].totalScore}점</div>
+                    </div>
+                `;
+            } else {
+                winnerBanner.innerHTML = '';
+            }
+
+            if (teamScores.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="padding: 35px; color: var(--text-secondary);">
+                            등록된 팀이 없습니다
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = teamScores.map((team, index) => `
+                <tr>
+                    <td class="rank-cell rank-${index + 1}">${index + 1}</td>
+                    <td>${team.name}</td>
+                    <td>
+                        <div class="round-scores">
+                            ${team.roundScores.map(rs => `
+                                <span class="round-score-badge ${rs.isDouble ? 'double' : ''}">
+                                    R${rs.round}: ${rs.score}${rs.isDouble ? '(×2)' : ''}
+                                </span>
+                            `).join('')}
+                            ${team.roundScores.length === 0 ? '<span style="color: var(--text-secondary);">-</span>' : ''}
+                        </div>
+                    </td>
+                    <td class="total-score">${team.totalScore}</td>
+                </tr>
+            `).join('');
+        }
+
+        // 알림 표시
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = 'notification ' + type + ' show';
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // 초기화
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadFromFirebase();
+            setupRealtimeSync();
+        });
+    </script>
+</body>
+</html>
