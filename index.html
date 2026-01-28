@@ -826,6 +826,7 @@
                         <span class="round-number">R<span id="currentRound">1</span></span>
                         <button class="btn btn-secondary" onclick="changeRound(1)">▶</button>
                         <button class="btn btn-secondary" onclick="addRound()">+ 라운드</button>
+                        <button class="btn btn-danger" onclick="deleteRound()" style="padding: 10px 15px;">🗑️ 삭제</button>
                     </div>
                     <div class="double-toggle">
                         <span>2배 라운드</span>
@@ -1296,6 +1297,27 @@
                 };
                 renderMatches();
                 await saveToFirebase();
+            }
+        }
+
+        // 라운드 삭제
+        async function deleteRound() {
+            if (state.rounds.length <= 1) {
+                showNotification('최소 1개의 라운드는 유지해야 합니다', 'error');
+                return;
+            }
+            
+            if (confirm(`라운드 ${state.currentRound + 1}을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`)) {
+                state.rounds.splice(state.currentRound, 1);
+                
+                // 현재 라운드 조정
+                if (state.currentRound >= state.rounds.length) {
+                    state.currentRound = state.rounds.length - 1;
+                }
+                
+                renderMatches();
+                await saveToFirebase();
+                showNotification('라운드가 삭제되었습니다', 'success');
             }
         }
 
