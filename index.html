@@ -92,34 +92,6 @@
             text-transform: uppercase;
         }
 
-        .firebase-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 12px;
-            padding: 6px 14px;
-            background: var(--bg-card);
-            border-radius: 20px;
-            font-size: 0.75rem;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--danger);
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        .status-dot.connected {
-            background: var(--success);
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
         .tabs {
             display: flex;
             justify-content: center;
@@ -257,73 +229,143 @@
             color: white;
         }
 
-        .team-input-row {
+        /* 선수 등록 폼 */
+        .player-input-row {
             display: grid;
-            grid-template-columns: 1fr 1fr auto;
+            grid-template-columns: 1fr auto auto;
             gap: 12px;
             align-items: end;
             margin-bottom: 12px;
         }
 
         @media (max-width: 600px) {
-            .team-input-row {
+            .player-input-row {
                 grid-template-columns: 1fr;
             }
         }
 
-        .teams-list {
+        .team-select-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .team-radio {
+            display: none;
+        }
+
+        .team-radio-label {
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 2px solid var(--border-color);
+        }
+
+        .team-radio-label.black {
+            background: var(--bg-elevated);
+            color: var(--text-secondary);
+        }
+
+        .team-radio-label.white {
+            background: var(--bg-elevated);
+            color: var(--text-secondary);
+        }
+
+        .team-radio:checked + .team-radio-label.black {
+            background: var(--team-black);
+            color: white;
+            border-color: #444;
+        }
+
+        .team-radio:checked + .team-radio-label.white {
+            background: var(--team-white);
+            color: #333;
+            border-color: #ccc;
+        }
+
+        /* 선수 목록 */
+        .players-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 12px;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
             margin-top: 15px;
         }
 
-        .team-card {
+        @media (max-width: 600px) {
+            .players-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .team-section {
             background: var(--bg-elevated);
-            border: 1px solid var(--border-color);
             border-radius: 10px;
             padding: 15px;
-            position: relative;
-            overflow: hidden;
         }
 
-        .team-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: linear-gradient(90deg, var(--accent-gold), transparent);
+        .team-section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            font-weight: 600;
         }
 
-        .team-name {
+        .team-section-title .badge {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
             font-weight: 700;
-            font-size: 0.95rem;
-            margin-bottom: 6px;
         }
 
-        .team-members {
-            color: var(--text-secondary);
-            font-size: 0.8rem;
+        .team-section-title .badge.black {
+            background: var(--team-black);
+            color: white;
         }
 
-        .team-delete {
-            position: absolute;
-            top: 12px;
-            right: 12px;
+        .team-section-title .badge.white {
+            background: var(--team-white);
+            color: #333;
+        }
+
+        .player-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .player-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            background: var(--bg-card);
+            border-radius: 6px;
+        }
+
+        .player-name {
+            font-weight: 500;
+        }
+
+        .player-delete {
             background: none;
             border: none;
             color: var(--text-secondary);
             cursor: pointer;
-            font-size: 1.1rem;
+            font-size: 1rem;
             transition: color 0.3s ease;
         }
 
-        .team-delete:hover {
+        .player-delete:hover {
             color: var(--danger);
         }
 
+        /* 라운드 경기 */
         .round-header {
             display: flex;
             justify-content: space-between;
@@ -417,25 +459,31 @@
 
         .match-team {
             display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .match-team-header {
+            display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
         }
 
         @media (max-width: 768px) {
-            .match-team {
+            .match-team-header {
                 justify-content: center;
             }
         }
 
         .team-badge {
-            width: 34px;
-            height: 34px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             flex-shrink: 0;
         }
 
@@ -449,6 +497,22 @@
             background: var(--team-white);
             color: #333;
             border: 2px solid #ccc;
+        }
+
+        .team-label {
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .player-selects {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .player-selects select {
+            font-size: 0.85rem;
+            padding: 8px 10px;
         }
 
         .vs-text {
@@ -524,56 +588,86 @@
             background: var(--border-color);
         }
 
-        .scoreboard-table {
-            width: 100%;
-            border-collapse: collapse;
+        /* 순위표 - 흑백 팀별 */
+        .team-scores-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .team-scores-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .team-score-card {
+            background: var(--bg-elevated);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .team-score-card.black {
+            border: 2px solid #444;
+        }
+
+        .team-score-card.white {
+            border: 2px solid #ccc;
+        }
+
+        .team-score-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .team-score-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
             font-size: 0.9rem;
         }
 
-        .scoreboard-table th,
-        .scoreboard-table td {
-            padding: 12px;
-            text-align: center;
-            border-bottom: 1px solid var(--border-color);
+        .team-score-badge.black {
+            background: var(--team-black);
+            color: white;
         }
 
-        .scoreboard-table th {
-            background: var(--bg-elevated);
-            color: var(--accent-gold);
-            font-weight: 500;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 0.1em;
+        .team-score-badge.white {
+            background: var(--team-white);
+            color: #333;
         }
 
-        .scoreboard-table tr:hover td {
-            background: rgba(255, 215, 0, 0.05);
-        }
-
-        .rank-cell {
-            font-family: 'Black Han Sans', sans-serif;
+        .team-score-title {
             font-size: 1.1rem;
+            font-weight: 600;
         }
 
-        .rank-1 { color: var(--accent-gold); }
-        .rank-2 { color: #c0c0c0; }
-        .rank-3 { color: #cd7f32; }
-
-        .total-score {
+        .team-total-score {
             font-family: 'Black Han Sans', sans-serif;
-            font-size: 1.2rem;
+            font-size: 3.5rem;
             color: var(--accent-gold);
+            margin: 10px 0;
         }
 
-        .round-scores {
+        .team-round-scores {
             display: flex;
+            flex-wrap: wrap;
             gap: 6px;
             justify-content: center;
-            flex-wrap: wrap;
+            margin-top: 15px;
         }
 
         .round-score-badge {
-            padding: 3px 8px;
+            padding: 4px 10px;
             background: var(--bg-card);
             border-radius: 5px;
             font-size: 0.75rem;
@@ -653,21 +747,15 @@
             border-color: var(--danger);
         }
 
-        .loading {
-            text-align: center;
-            padding: 20px;
+        .score-history {
+            margin-top: 20px;
+        }
+
+        .score-history-title {
+            font-size: 0.85rem;
             color: var(--text-secondary);
-        }
-
-        .loading::after {
-            content: '';
-            animation: dots 1.5s infinite;
-        }
-
-        @keyframes dots {
-            0%, 20% { content: '.'; }
-            40% { content: '..'; }
-            60%, 100% { content: '...'; }
+            margin-bottom: 10px;
+            text-align: center;
         }
     </style>
 </head>
@@ -679,31 +767,53 @@
         </header>
 
         <div class="tabs">
-            <button class="tab-btn active" data-tab="teams">팀 관리</button>
+            <button class="tab-btn active" data-tab="players">선수 관리</button>
             <button class="tab-btn" data-tab="rounds">라운드 경기</button>
             <button class="tab-btn" data-tab="scoreboard">순위표</button>
         </div>
 
-        <!-- 팀 관리 패널 -->
-        <div class="panel active" id="teams-panel">
+        <!-- 선수 관리 패널 -->
+        <div class="panel active" id="players-panel">
             <div class="card">
-                <h2 class="card-title">새 팀 등록</h2>
-                <div class="team-input-row">
+                <h2 class="card-title">선수 등록</h2>
+                <div class="player-input-row">
                     <div class="form-group" style="margin-bottom: 0;">
-                        <label>선수 1</label>
-                        <input type="text" id="player1" placeholder="이름 입력">
+                        <label>선수 이름</label>
+                        <input type="text" id="playerName" placeholder="이름 입력">
                     </div>
                     <div class="form-group" style="margin-bottom: 0;">
-                        <label>선수 2</label>
-                        <input type="text" id="player2" placeholder="이름 입력">
+                        <label>소속 팀</label>
+                        <div class="team-select-group">
+                            <input type="radio" name="teamColor" value="black" id="teamBlack" class="team-radio" checked>
+                            <label for="teamBlack" class="team-radio-label black">흑팀</label>
+                            <input type="radio" name="teamColor" value="white" id="teamWhite" class="team-radio">
+                            <label for="teamWhite" class="team-radio-label white">백팀</label>
+                        </div>
                     </div>
-                    <button class="btn btn-primary" onclick="addTeam()">팀 추가</button>
+                    <button class="btn btn-primary" onclick="addPlayer()">선수 추가</button>
                 </div>
             </div>
 
             <div class="card">
-                <h2 class="card-title">등록된 팀 목록</h2>
-                <div class="teams-list" id="teamsList"></div>
+                <h2 class="card-title">등록된 선수</h2>
+                <div class="players-container">
+                    <div class="team-section">
+                        <div class="team-section-title">
+                            <span class="badge black">흑</span>
+                            <span>흑팀 선수</span>
+                            <span id="blackCount">(0명)</span>
+                        </div>
+                        <div class="player-list" id="blackPlayersList"></div>
+                    </div>
+                    <div class="team-section">
+                        <div class="team-section-title">
+                            <span class="badge white">백</span>
+                            <span>백팀 선수</span>
+                            <span id="whiteCount">(0명)</span>
+                        </div>
+                        <div class="player-list" id="whitePlayersList"></div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -749,22 +859,31 @@
         <!-- 순위표 패널 -->
         <div class="panel" id="scoreboard-panel">
             <div id="winnerBanner"></div>
-            <div class="card">
-                <h2 class="card-title">누적 순위표</h2>
-                <div style="overflow-x: auto;">
-                    <table class="scoreboard-table">
-                        <thead>
-                            <tr>
-                                <th>순위</th>
-                                <th>팀명</th>
-                                <th>라운드별 점수</th>
-                                <th>총점</th>
-                            </tr>
-                        </thead>
-                        <tbody id="scoreboardBody">
-                        </tbody>
-                    </table>
+            
+            <div class="team-scores-container">
+                <div class="team-score-card black">
+                    <div class="team-score-header">
+                        <span class="team-score-badge black">흑</span>
+                        <span class="team-score-title">흑팀</span>
+                    </div>
+                    <div class="team-total-score" id="blackTotalScore">0</div>
+                    <div class="score-label">누적 점수</div>
+                    <div class="team-round-scores" id="blackRoundScores"></div>
                 </div>
+                <div class="team-score-card white">
+                    <div class="team-score-header">
+                        <span class="team-score-badge white">백</span>
+                        <span class="team-score-title">백팀</span>
+                    </div>
+                    <div class="team-total-score" id="whiteTotalScore">0</div>
+                    <div class="score-label">누적 점수</div>
+                    <div class="team-round-scores" id="whiteRoundScores"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">라운드별 결과</h2>
+                <div id="roundHistory"></div>
             </div>
         </div>
     </div>
@@ -788,58 +907,47 @@
 
         // 앱 상태
         let state = {
-            teams: [],
+            players: [],
             rounds: [{ matches: [{}, {}, {}, {}], isDouble: false }],
-            currentRound: 0
-        };
-
-        // Firebase 연결 상태 업데이트
-        function updateFirebaseStatus(connected, message) {
-            const dot = document.getElementById('firebaseStatus');
-            const text = document.getElementById('firebaseStatusText');
-            if (connected) {
-                dot.classList.add('connected');
-                text.textContent = message || 'Firebase 연결됨';
-            } else {
-                dot.classList.remove('connected');
-                text.textContent = message || 'Firebase 연결 실패';
+            currentRound: 0,
+            teamScores: {
+                black: { total: 0, rounds: [] },
+                white: { total: 0, rounds: [] }
             }
-        }
+        };
 
         // Firebase에서 데이터 로드
         async function loadFromFirebase() {
-            // 먼저 로컬 스토리지에서 로드 (백업)
             loadFromLocalStorage();
-            renderTeams();
+            renderPlayers();
             renderMatches();
             
             try {
                 const doc = await db.collection('tournaments').doc('current').get();
                 if (doc.exists) {
                     const data = doc.data();
-                    state.teams = data.teams || [];
+                    state.players = data.players || [];
                     state.rounds = data.rounds || [{ matches: [{}, {}, {}, {}], isDouble: false }];
+                    state.teamScores = data.teamScores || { black: { total: 0, rounds: [] }, white: { total: 0, rounds: [] } };
                     state.currentRound = Math.min(state.currentRound, state.rounds.length - 1);
-                    // 로컬 스토리지에도 저장
                     saveToLocalStorage();
                 }
-                renderTeams();
+                renderPlayers();
                 renderMatches();
             } catch (error) {
                 console.error('Firebase 로드 오류:', error);
-                // Firebase 실패해도 로컬 데이터 사용
             }
         }
 
         // Firebase에 데이터 저장
         async function saveToFirebase() {
-            // 로컬 스토리지에도 항상 저장
             saveToLocalStorage();
             
             try {
                 await db.collection('tournaments').doc('current').set({
-                    teams: state.teams,
+                    players: state.players,
                     rounds: state.rounds,
+                    teamScores: state.teamScores,
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 console.log('Firebase 저장 완료');
@@ -863,8 +971,9 @@
                 const saved = localStorage.getItem('hanaClubData');
                 if (saved) {
                     const data = JSON.parse(saved);
-                    state.teams = data.teams || [];
+                    state.players = data.players || [];
                     state.rounds = data.rounds || [{ matches: [{}, {}, {}, {}], isDouble: false }];
+                    state.teamScores = data.teamScores || { black: { total: 0, rounds: [] }, white: { total: 0, rounds: [] } };
                     state.currentRound = data.currentRound || 0;
                 }
             } catch(e) {
@@ -877,12 +986,12 @@
             db.collection('tournaments').doc('current').onSnapshot((doc) => {
                 if (doc.exists) {
                     const data = doc.data();
-                    state.teams = data.teams || [];
+                    state.players = data.players || [];
                     state.rounds = data.rounds || [{ matches: [{}, {}, {}, {}], isDouble: false }];
+                    state.teamScores = data.teamScores || { black: { total: 0, rounds: [] }, white: { total: 0, rounds: [] } };
                     state.currentRound = Math.min(state.currentRound, state.rounds.length - 1);
-                    // 로컬 스토리지에도 저장
                     saveToLocalStorage();
-                    renderTeams();
+                    renderPlayers();
                     renderMatches();
                     renderScoreboard();
                 }
@@ -905,64 +1014,73 @@
             });
         });
 
-        // 팀 추가
-        async function addTeam() {
-            const p1 = document.getElementById('player1').value.trim();
-            const p2 = document.getElementById('player2').value.trim();
+        // 선수 추가
+        async function addPlayer() {
+            const name = document.getElementById('playerName').value.trim();
+            const team = document.querySelector('input[name="teamColor"]:checked').value;
             
-            if (!p1 || !p2) {
-                showNotification('두 선수의 이름을 모두 입력하세요', 'error');
+            if (!name) {
+                showNotification('선수 이름을 입력하세요', 'error');
                 return;
             }
 
-            const team = {
+            const player = {
                 id: Date.now().toString(),
-                name: `${p1} & ${p2}`,
-                player1: p1,
-                player2: p2,
-                scores: []
+                name: name,
+                team: team
             };
 
-            state.teams.push(team);
-            document.getElementById('player1').value = '';
-            document.getElementById('player2').value = '';
+            state.players.push(player);
+            document.getElementById('playerName').value = '';
             
-            renderTeams();
+            renderPlayers();
             renderMatches();
             await saveToFirebase();
-            showNotification('팀이 추가되었습니다', 'success');
+            showNotification('선수가 추가되었습니다', 'success');
         }
 
-        // 팀 삭제
-        async function deleteTeam(id) {
-            if (confirm('이 팀을 삭제하시겠습니까?')) {
-                state.teams = state.teams.filter(t => t.id !== id);
-                renderTeams();
+        // 선수 삭제
+        async function deletePlayer(id) {
+            if (confirm('이 선수를 삭제하시겠습니까?')) {
+                state.players = state.players.filter(p => p.id !== id);
+                renderPlayers();
                 renderMatches();
                 await saveToFirebase();
             }
         }
 
-        // 팀 목록 렌더링
-        function renderTeams() {
-            const container = document.getElementById('teamsList');
-            if (state.teams.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">👥</div>
-                        <p>등록된 팀이 없습니다</p>
+        // 선수 목록 렌더링
+        function renderPlayers() {
+            const blackPlayers = state.players.filter(p => p.team === 'black');
+            const whitePlayers = state.players.filter(p => p.team === 'white');
+            
+            document.getElementById('blackCount').textContent = `(${blackPlayers.length}명)`;
+            document.getElementById('whiteCount').textContent = `(${whitePlayers.length}명)`;
+            
+            const blackList = document.getElementById('blackPlayersList');
+            const whiteList = document.getElementById('whitePlayersList');
+            
+            if (blackPlayers.length === 0) {
+                blackList.innerHTML = '<div class="empty-state" style="padding: 20px;"><p>등록된 선수가 없습니다</p></div>';
+            } else {
+                blackList.innerHTML = blackPlayers.map(player => `
+                    <div class="player-item">
+                        <span class="player-name">${player.name}</span>
+                        <button class="player-delete" onclick="deletePlayer('${player.id}')">×</button>
                     </div>
-                `;
-                return;
+                `).join('');
             }
-
-            container.innerHTML = state.teams.map(team => `
-                <div class="team-card">
-                    <button class="team-delete" onclick="deleteTeam('${team.id}')">×</button>
-                    <div class="team-name">${team.name}</div>
-                    <div class="team-members">${team.player1} / ${team.player2}</div>
-                </div>
-            `).join('');
+            
+            if (whitePlayers.length === 0) {
+                whiteList.innerHTML = '<div class="empty-state" style="padding: 20px;"><p>등록된 선수가 없습니다</p></div>';
+            } else {
+                whiteList.innerHTML = whitePlayers.map(player => `
+                    <div class="player-item">
+                        <span class="player-name">${player.name}</span>
+                        <button class="player-delete" onclick="deletePlayer('${player.id}')">×</button>
+                    </div>
+                `).join('');
+            }
         }
 
         // 라운드 변경
@@ -1009,11 +1127,14 @@
 
             const container = document.getElementById('matchGrid');
             
-            if (state.teams.length < 2) {
+            const blackPlayers = state.players.filter(p => p.team === 'black');
+            const whitePlayers = state.players.filter(p => p.team === 'white');
+            
+            if (blackPlayers.length < 2 || whitePlayers.length < 2) {
                 container.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon">🏸</div>
-                        <p>최소 2개의 팀을 먼저 등록하세요</p>
+                        <p>흑팀과 백팀에 각각 최소 2명의 선수가 필요합니다</p>
                     </div>
                 `;
                 return;
@@ -1024,23 +1145,45 @@
                 return `
                     <div class="match-row">
                         <div class="match-team">
-                            <div class="team-badge black">흑</div>
-                            <select onchange="updateMatch(${i}, 'blackTeam', this.value)">
-                                <option value="">흑팀 선택</option>
-                                ${state.teams.map(t => `
-                                    <option value="${t.id}" ${match.blackTeam === t.id ? 'selected' : ''}>${t.name}</option>
-                                `).join('')}
-                            </select>
+                            <div class="match-team-header">
+                                <div class="team-badge black">흑</div>
+                                <span class="team-label">흑팀</span>
+                            </div>
+                            <div class="player-selects">
+                                <select onchange="updateMatch(${i}, 'blackPlayer1', this.value)">
+                                    <option value="">선수 1 선택</option>
+                                    ${blackPlayers.map(p => `
+                                        <option value="${p.id}" ${match.blackPlayer1 === p.id ? 'selected' : ''}>${p.name}</option>
+                                    `).join('')}
+                                </select>
+                                <select onchange="updateMatch(${i}, 'blackPlayer2', this.value)">
+                                    <option value="">선수 2 선택</option>
+                                    ${blackPlayers.map(p => `
+                                        <option value="${p.id}" ${match.blackPlayer2 === p.id ? 'selected' : ''}>${p.name}</option>
+                                    `).join('')}
+                                </select>
+                            </div>
                         </div>
                         <div class="vs-text">VS</div>
                         <div class="match-team">
-                            <div class="team-badge white">백</div>
-                            <select onchange="updateMatch(${i}, 'whiteTeam', this.value)">
-                                <option value="">백팀 선택</option>
-                                ${state.teams.map(t => `
-                                    <option value="${t.id}" ${match.whiteTeam === t.id ? 'selected' : ''}>${t.name}</option>
-                                `).join('')}
-                            </select>
+                            <div class="match-team-header">
+                                <div class="team-badge white">백</div>
+                                <span class="team-label">백팀</span>
+                            </div>
+                            <div class="player-selects">
+                                <select onchange="updateMatch(${i}, 'whitePlayer1', this.value)">
+                                    <option value="">선수 1 선택</option>
+                                    ${whitePlayers.map(p => `
+                                        <option value="${p.id}" ${match.whitePlayer1 === p.id ? 'selected' : ''}>${p.name}</option>
+                                    `).join('')}
+                                </select>
+                                <select onchange="updateMatch(${i}, 'whitePlayer2', this.value)">
+                                    <option value="">선수 2 선택</option>
+                                    ${whitePlayers.map(p => `
+                                        <option value="${p.id}" ${match.whitePlayer2 === p.id ? 'selected' : ''}>${p.name}</option>
+                                    `).join('')}
+                                </select>
+                            </div>
                         </div>
                         <div class="result-buttons">
                             <button class="result-btn ${match.winner === 'black' ? 'selected-black' : ''}" 
@@ -1116,23 +1259,29 @@
         // 라운드 결과 저장
         async function saveRound() {
             const round = state.rounds[state.currentRound];
-            const { blackScore, whiteScore } = calculateRoundScore();
-
-            round.matches.forEach(match => {
-                if (!match.blackTeam || !match.whiteTeam || !match.winner) return;
-
-                const blackTeam = state.teams.find(t => t.id === match.blackTeam);
-                const whiteTeam = state.teams.find(t => t.id === match.whiteTeam);
-
-                if (blackTeam) {
-                    if (!blackTeam.roundScores) blackTeam.roundScores = {};
-                    blackTeam.roundScores[state.currentRound] = blackScore;
+            calculateRoundScore();
+            
+            // 팀 점수 계산
+            let blackTotal = 0;
+            let whiteTotal = 0;
+            const blackRounds = [];
+            const whiteRounds = [];
+            
+            state.rounds.forEach((r, index) => {
+                if (r.blackScore !== undefined) {
+                    blackTotal += r.blackScore;
+                    blackRounds.push({ round: index + 1, score: r.blackScore, isDouble: r.isDouble });
                 }
-                if (whiteTeam) {
-                    if (!whiteTeam.roundScores) whiteTeam.roundScores = {};
-                    whiteTeam.roundScores[state.currentRound] = whiteScore;
+                if (r.whiteScore !== undefined) {
+                    whiteTotal += r.whiteScore;
+                    whiteRounds.push({ round: index + 1, score: r.whiteScore, isDouble: r.isDouble });
                 }
             });
+            
+            state.teamScores = {
+                black: { total: blackTotal, rounds: blackRounds },
+                white: { total: whiteTotal, rounds: whiteRounds }
+            };
 
             await saveToFirebase();
             showNotification(`라운드 ${state.currentRound + 1} 결과가 저장되었습니다`, 'success');
@@ -1152,82 +1301,109 @@
 
         // 순위표 렌더링
         function renderScoreboard() {
-            const tbody = document.getElementById('scoreboardBody');
-            const winnerBanner = document.getElementById('winnerBanner');
-
-            const teamScores = state.teams.map(team => {
-                let totalScore = 0;
-                const roundScores = [];
-
-                state.rounds.forEach((round, roundIndex) => {
-                    let teamScore = 0;
-                    let participated = false;
-
-                    round.matches.forEach(match => {
-                        if (match.blackTeam === team.id) {
-                            participated = true;
-                            if (round.blackScore !== undefined) {
-                                teamScore = round.blackScore;
-                            }
-                        } else if (match.whiteTeam === team.id) {
-                            participated = true;
-                            if (round.whiteScore !== undefined) {
-                                teamScore = round.whiteScore;
-                            }
-                        }
-                    });
-
-                    if (participated) {
-                        roundScores.push({ round: roundIndex + 1, score: teamScore, isDouble: round.isDouble });
-                        totalScore += teamScore;
-                    }
-                });
-
-                return { ...team, totalScore, roundScores };
+            // 팀 점수 계산
+            let blackTotal = 0;
+            let whiteTotal = 0;
+            const blackRounds = [];
+            const whiteRounds = [];
+            
+            state.rounds.forEach((r, index) => {
+                if (r.blackScore !== undefined) {
+                    blackTotal += r.blackScore;
+                    blackRounds.push({ round: index + 1, score: r.blackScore, isDouble: r.isDouble, wins: r.blackWins || 0 });
+                }
+                if (r.whiteScore !== undefined) {
+                    whiteTotal += r.whiteScore;
+                    whiteRounds.push({ round: index + 1, score: r.whiteScore, isDouble: r.isDouble, wins: r.whiteWins || 0 });
+                }
             });
-
-            teamScores.sort((a, b) => b.totalScore - a.totalScore);
-
-            if (teamScores.length > 0 && teamScores[0].totalScore > 0) {
+            
+            // 총점 표시
+            document.getElementById('blackTotalScore').textContent = blackTotal;
+            document.getElementById('whiteTotalScore').textContent = whiteTotal;
+            
+            // 라운드별 점수 표시
+            document.getElementById('blackRoundScores').innerHTML = blackRounds.map(r => `
+                <span class="round-score-badge ${r.isDouble ? 'double' : ''}">
+                    R${r.round}: ${r.score}${r.isDouble ? '(×2)' : ''}
+                </span>
+            `).join('') || '<span style="color: var(--text-secondary);">아직 기록이 없습니다</span>';
+            
+            document.getElementById('whiteRoundScores').innerHTML = whiteRounds.map(r => `
+                <span class="round-score-badge ${r.isDouble ? 'double' : ''}">
+                    R${r.round}: ${r.score}${r.isDouble ? '(×2)' : ''}
+                </span>
+            `).join('') || '<span style="color: var(--text-secondary);">아직 기록이 없습니다</span>';
+            
+            // 승자 배너
+            const winnerBanner = document.getElementById('winnerBanner');
+            if (blackTotal > whiteTotal) {
+                winnerBanner.innerHTML = `
+                    <div class="winner-banner" style="background: linear-gradient(135deg, #333, #1a1a1a);">
+                        <div class="winner-title">🏆 현재 선두</div>
+                        <div class="winner-name" style="color: white;">흑팀</div>
+                        <div style="margin-top: 8px; font-size: 1rem; color: #ccc;">${blackTotal}점 (${blackTotal - whiteTotal}점 앞서는 중)</div>
+                    </div>
+                `;
+            } else if (whiteTotal > blackTotal) {
+                winnerBanner.innerHTML = `
+                    <div class="winner-banner" style="background: linear-gradient(135deg, #f5f5f5, #ddd);">
+                        <div class="winner-title" style="color: #666;">🏆 현재 선두</div>
+                        <div class="winner-name" style="color: #333;">백팀</div>
+                        <div style="margin-top: 8px; font-size: 1rem; color: #666;">${whiteTotal}점 (${whiteTotal - blackTotal}점 앞서는 중)</div>
+                    </div>
+                `;
+            } else if (blackTotal > 0 || whiteTotal > 0) {
                 winnerBanner.innerHTML = `
                     <div class="winner-banner">
-                        <div class="winner-title">🏆 현재 선두</div>
-                        <div class="winner-name">${teamScores[0].name}</div>
-                        <div style="margin-top: 8px; font-size: 1rem;">${teamScores[0].totalScore}점</div>
+                        <div class="winner-title">⚖️ 동점</div>
+                        <div class="winner-name">${blackTotal}점</div>
                     </div>
                 `;
             } else {
                 winnerBanner.innerHTML = '';
             }
-
-            if (teamScores.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="4" style="padding: 35px; color: var(--text-secondary);">
-                            등록된 팀이 없습니다
-                        </td>
-                    </tr>
+            
+            // 라운드별 상세 결과
+            const roundHistory = document.getElementById('roundHistory');
+            if (state.rounds.some(r => r.blackScore !== undefined)) {
+                roundHistory.innerHTML = `
+                    <table class="scoreboard-table" style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                        <thead>
+                            <tr>
+                                <th style="padding: 10px; background: var(--bg-elevated); color: var(--accent-gold);">라운드</th>
+                                <th style="padding: 10px; background: var(--bg-elevated); color: var(--accent-gold);">흑팀</th>
+                                <th style="padding: 10px; background: var(--bg-elevated); color: var(--accent-gold);">백팀</th>
+                                <th style="padding: 10px; background: var(--bg-elevated); color: var(--accent-gold);">승자</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${state.rounds.map((r, i) => {
+                                if (r.blackScore === undefined) return '';
+                                const winner = r.blackScore > r.whiteScore ? '흑팀' : (r.whiteScore > r.blackScore ? '백팀' : '무승부');
+                                return `
+                                    <tr>
+                                        <td style="padding: 10px; border-bottom: 1px solid var(--border-color);">
+                                            R${i + 1}${r.isDouble ? ' (×2)' : ''}
+                                        </td>
+                                        <td style="padding: 10px; border-bottom: 1px solid var(--border-color);">
+                                            ${r.blackWins || 0}승 → ${r.blackScore}점
+                                        </td>
+                                        <td style="padding: 10px; border-bottom: 1px solid var(--border-color);">
+                                            ${r.whiteWins || 0}승 → ${r.whiteScore}점
+                                        </td>
+                                        <td style="padding: 10px; border-bottom: 1px solid var(--border-color); font-weight: 700; color: ${winner === '흑팀' ? '#fff' : (winner === '백팀' ? '#333' : 'var(--accent-gold)')}; background: ${winner === '흑팀' ? 'var(--team-black)' : (winner === '백팀' ? 'var(--team-white)' : 'transparent')};">
+                                            ${winner}
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
                 `;
-                return;
+            } else {
+                roundHistory.innerHTML = '<div class="empty-state"><p>아직 저장된 라운드 결과가 없습니다</p></div>';
             }
-
-            tbody.innerHTML = teamScores.map((team, index) => `
-                <tr>
-                    <td class="rank-cell rank-${index + 1}">${index + 1}</td>
-                    <td>${team.name}</td>
-                    <td>
-                        <div class="round-scores">
-                            ${team.roundScores.map(rs => `
-                                <span class="round-score-badge ${rs.isDouble ? 'double' : ''}">
-                                    R${rs.round}: ${rs.score}${rs.isDouble ? '(×2)' : ''}
-                                </span>
-                            `).join('')}
-                            ${team.roundScores.length === 0 ? '<span style="color: var(--text-secondary);">-</span>' : ''}
-                        </div>
-                    </td>
-                    <td class="total-score">${team.totalScore}</td>
-                </tr>
-            `).join('');
         }
 
         // 알림 표시
