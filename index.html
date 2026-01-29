@@ -1363,24 +1363,24 @@
             if (blackTotal > whiteTotal) {
                 winnerBanner.innerHTML = `
                     <div class="winner-banner" style="background: linear-gradient(135deg, #333, #1a1a1a);">
-                        <div class="winner-title">🏆 현재 선두</div>
-                        <div class="winner-name" style="color: white;">흑팀</div>
-                        <div style="margin-top: 8px; font-size: 1rem; color: #ccc;">${blackTotal}점 (${blackTotal - whiteTotal}점 앞서는 중)</div>
+                        <div class="winner-title" style="font-size: 1.1rem;">🏆 현재 선두</div>
+                        <div class="winner-name" style="color: white; font-size: 2.5rem;">흑팀</div>
+                        <div style="margin-top: 8px; font-size: 1.1rem; color: #ccc;">${blackTotal}점 (${blackTotal - whiteTotal}점 앞서는 중)</div>
                     </div>
                 `;
             } else if (whiteTotal > blackTotal) {
                 winnerBanner.innerHTML = `
                     <div class="winner-banner" style="background: linear-gradient(135deg, #f5f5f5, #ddd);">
-                        <div class="winner-title" style="color: #666;">🏆 현재 선두</div>
-                        <div class="winner-name" style="color: #333;">백팀</div>
-                        <div style="margin-top: 8px; font-size: 1rem; color: #666;">${whiteTotal}점 (${whiteTotal - blackTotal}점 앞서는 중)</div>
+                        <div class="winner-title" style="color: #666; font-size: 1.1rem;">🏆 현재 선두</div>
+                        <div class="winner-name" style="color: #333; font-size: 2.5rem;">백팀</div>
+                        <div style="margin-top: 8px; font-size: 1.1rem; color: #666;">${whiteTotal}점 (${whiteTotal - blackTotal}점 앞서는 중)</div>
                     </div>
                 `;
             } else if (blackTotal > 0 || whiteTotal > 0) {
                 winnerBanner.innerHTML = `
                     <div class="winner-banner">
-                        <div class="winner-title"> 동점</div>
-                        <div class="winner-name">${blackTotal}점</div>
+                        <div class="winner-title" style="font-size: 1.3rem;">⚖️ 동점</div>
+                        <div class="winner-name" style="font-size: 3rem;">${blackTotal}점</div>
                     </div>
                 `;
             } else {
